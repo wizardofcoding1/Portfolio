@@ -17,7 +17,7 @@ export const personalInfo = {
   phone: '+91 9082165766',
   availability: 'Open to opportunities',
   resumeUrl: '/resume_3.0.pdf',
-  avatar: null,
+  avatar: '/profile_photo.jpg',
   socials: {
     github: 'https://github.com/varmakartik',
     linkedin: 'https://linkedin.com/in/kartikvarma200430',

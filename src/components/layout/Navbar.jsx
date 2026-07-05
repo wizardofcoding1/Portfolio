@@ -1,59 +1,73 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Download, ArrowUpRight } from 'lucide-react'
 import { personalInfo } from '../../data/personalInfo'
 
 const navLinks = [
-  { label: 'Home', href: '#hero' },
-  { label: 'Skills', href: '#skills' },
+  { label: 'Home',       href: '#hero' },
+  { label: 'Skills',     href: '#skills' },
   { label: 'Experience', href: '#experience' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Research', href: '#research' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Projects',   href: '#projects' },
+  { label: 'Research',   href: '#research' },
+  { label: 'Contact',    href: '#contact' },
 ]
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
+  const [scrolled, setScrolled]           = useState(false)
   const [activeSection, setActiveSection] = useState('hero')
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [hidden, setHidden] = useState(false)
-  const [lastScrollY, setLastScrollY] = useState(0)
+  const [menuOpen, setMenuOpen]           = useState(false)
+  const [isMobile, setIsMobile]           = useState(false)
 
-  // Scroll behavior: hide on down, show on up
+  const isManualClick = useRef(false)
+  const clickTimeout = useRef(null)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   useEffect(() => {
     const handleScroll = () => {
-      const sy = window.scrollY
-      setScrolled(sy > 50)
-      setHidden(sy > lastScrollY && sy > 100)
-      setLastScrollY(sy)
+      setScrolled(window.scrollY > 40)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+  }, [])
 
-  // Active section detection
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isManualClick.current) return
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
-          }
+          if (entry.isIntersecting) setActiveSection(entry.target.id)
         })
       },
-      { threshold: 0.3, rootMargin: '-80px 0px -60% 0px' }
+      { threshold: 0.05, rootMargin: '-15% 0px -45% 0px' }
     )
     navLinks.forEach(({ href }) => {
       const el = document.querySelector(href)
       if (el) observer.observe(el)
     })
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      if (clickTimeout.current) clearTimeout(clickTimeout.current)
+    }
   }, [])
 
   const handleNavClick = useCallback((e, href) => {
     e.preventDefault()
     const el = document.querySelector(href)
     if (el) {
+      isManualClick.current = true
+      setActiveSection(href.slice(1))
+      
+      if (clickTimeout.current) clearTimeout(clickTimeout.current)
+      clickTimeout.current = setTimeout(() => {
+        isManualClick.current = false
+      }, 950) // Ignore scroll intersections during smooth scroll
+
       el.scrollIntoView({ behavior: 'smooth' })
     }
     setMenuOpen(false)
@@ -61,58 +75,64 @@ export default function Navbar() {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -80, opacity: 0 }}
-        animate={{
-          y: hidden ? -80 : 0,
-          opacity: hidden ? 0 : 1,
-        }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-[100]"
+      {/* Floating pill navbar */}
+      <motion.div
+        initial={{ y: -60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed left-0 right-0 z-[100] flex justify-center pointer-events-none transition-all duration-500 ease-out"
         style={{
-          background: scrolled
-            ? 'rgba(248, 250, 252, 0.85)'
-            : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(15,23,42,0.06)' : 'none',
-          transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s',
+          top: scrolled ? '16px' : '0px',
+          paddingLeft: scrolled ? '16px' : '0px',
+          paddingRight: scrolled ? '16px' : '0px',
         }}
       >
-        <div className="container-custom h-16 sm:h-20 flex items-center justify-between">
+        <motion.header
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="pointer-events-auto w-full flex items-center justify-between px-4 sm:px-8 border-b transition-all duration-500 ease-out"
+          style={{
+            height: scrolled ? '56px' : '72px',
+            maxWidth: scrolled ? '1024px' : '100%',
+            borderRadius: scrolled ? '16px' : '0px',
+            boxShadow: scrolled
+              ? '0 4px 32px rgba(37, 99, 235, 0.08), 0 1px 8px rgba(0, 0, 0, 0.04)'
+              : 'none',
+            background: isMobile
+              ? '#FFFFFF'
+              : (scrolled ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.70)'),
+            borderColor: isMobile
+              ? 'rgba(15, 23, 42, 0.08)'
+              : (scrolled ? 'rgba(15, 23, 42, 0.08)' : 'rgba(15, 23, 42, 0.04)'),
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
+        >
           {/* Logo */}
           <motion.a
             href="#hero"
             onClick={(e) => handleNavClick(e, '#hero')}
-            className="relative flex items-center gap-2 group"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            className="flex items-center gap-2.5 group flex-shrink-0"
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
           >
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold font-sora"
+              className="w-8 h-8 rounded-xl flex items-center justify-center"
               style={{
-                background: 'linear-gradient(135deg, rgba(37, 99, 235,0.12), rgba(56, 189, 248,0.12))',
-                border: '1px solid rgba(37, 99, 235,0.25)',
-                transition: 'box-shadow 0.3s',
+                background: 'linear-gradient(135deg, rgba(37,99,235,0.12), rgba(56,189,248,0.12))',
+                border: '1px solid rgba(37,99,235,0.22)',
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.boxShadow = '0 0 15px rgba(37, 99, 235,0.25)')
-              }
-              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
             >
-              {/* AI Diamond Sparkle & Dashed Orbit Ring SVG */}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-[#2563EB]">
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
                 <path d="M12 4c.4 2.5 2 4 4.5 4.4-2.5.4-4 2-4.4 4.5-.4-2.5-2-4-4.5-4.4 2.5-.4 4-2 4.4-4.5z" fill="#2563EB" />
                 <circle cx="12" cy="12" r="8" stroke="#2563EB" strokeWidth="1" strokeDasharray="3 3" className="animate-spin-slow" />
               </svg>
             </div>
-            <span className="hidden sm:block font-grotesk font-semibold text-slate-800 group-hover:text-slate-900 transition-colors">
+            <span className="font-syne font-extrabold text-sm text-[#0F172A] tracking-wide lg:hidden">
               {personalInfo.name}
             </span>
           </motion.a>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          {/* Desktop links */}
+          <nav className="hidden lg:flex items-center gap-0.5">
             {navLinks.map(({ label, href }) => {
               const isActive = activeSection === href.slice(1)
               return (
@@ -120,135 +140,134 @@ export default function Navbar() {
                   key={href}
                   href={href}
                   onClick={(e) => handleNavClick(e, href)}
-                  className="relative px-4 py-2 text-sm font-grotesk font-medium transition-colors duration-200 group"
-                  style={{ color: isActive ? '#2563EB' : 'rgba(15,23,42,0.6)' }}
+                  className="relative px-3.5 py-1.5 text-[13px] font-syne font-bold rounded-lg transition-colors duration-200 z-10"
+                  style={{
+                    color: isActive ? '#2563EB' : '#475569',
+                  }}
                 >
-                  <span className="relative z-10 group-hover:text-slate-900 transition-colors">
-                    {label}
-                  </span>
-                  {/* Animated underline */}
-                  <span
-                    className="absolute bottom-1 left-4 right-4 h-px transition-all duration-300"
-                    style={{
-                      background: 'linear-gradient(90deg, #2563EB, #38BDF8)',
-                      transform: isActive ? 'scaleX(1)' : 'scaleX(0)',
-                      transformOrigin: 'left',
-                      opacity: isActive ? 1 : 0,
-                    }}
-                  />
-                  {/* Hover underline */}
-                  <span
-                    className="absolute bottom-1 left-4 right-4 h-px transition-all duration-300 group-hover:scale-x-100 group-hover:opacity-50"
-                    style={{
-                      background: 'linear-gradient(90deg, #2563EB, #38BDF8)',
-                      transform: 'scaleX(0)',
-                      transformOrigin: 'left',
-                      opacity: 0,
-                    }}
-                  />
+                  {label}
+                  {isActive && (
+                    <motion.div
+                      layoutId="desktop-active-pill"
+                      className="absolute inset-0 rounded-lg bg-[#2563EB]/10 -z-10"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
                 </a>
               )
             })}
+          </nav>
 
-            {/* CTA: Changed from HIRE ME to Download Resume */}
+          {/* Desktop CTA */}
+          <div className="hidden lg:block">
             <motion.a
               href={personalInfo.resumeUrl}
               download="Kartik_Varma_Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-4 px-5 py-2 rounded-lg text-sm font-grotesk font-semibold transition-all duration-300"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-syne font-bold text-white"
               style={{
-                background: 'linear-gradient(135deg, rgba(37, 99, 235,0.08), rgba(56, 189, 248,0.08))',
-                border: '1px solid rgba(37, 99, 235,0.25)',
-                color: '#2563EB',
+                background: 'linear-gradient(135deg, #2563EB 0%, #38BDF8 100%)',
+                boxShadow: '0 2px 10px rgba(37,99,235,0.28)',
               }}
-              whileHover={{
-                scale: 1.03,
-                boxShadow: '0 0 15px rgba(37, 99, 235,0.2)',
-              }}
+              whileHover={{ scale: 1.04, boxShadow: '0 4px 20px rgba(37,99,235,0.40)' }}
               whileTap={{ scale: 0.97 }}
             >
-              Resume
+              <Download size={13} /> Resume
             </motion.a>
-          </nav>
+          </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile hamburger */}
           <motion.button
-            className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-lg"
+            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-xl"
             onClick={() => setMenuOpen((o) => !o)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
             aria-label="Toggle menu"
             style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(37,99,235,0.08)',
+              border: '1px solid rgba(37,99,235,0.18)',
             }}
           >
             <AnimatePresence mode="wait">
               {menuOpen ? (
-                <motion.span
-                  key="close"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                <motion.span key="close"
+                  initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.16 }}
                 >
-                  <X size={18} color="rgba(255,255,255,0.8)" />
+                  <X size={17} color="#2563EB" />
                 </motion.span>
               ) : (
-                <motion.span
-                  key="menu"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                <motion.span key="open"
+                  initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.16 }}
                 >
-                  <Menu size={18} color="rgba(255,255,255,0.8)" />
+                  <Menu size={17} color="#2563EB" />
                 </motion.span>
               )}
             </AnimatePresence>
           </motion.button>
-        </div>
-      </motion.header>
+        </motion.header>
+      </motion.div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile drawer */}
       <AnimatePresence>
         {menuOpen && (
           <>
             {/* Backdrop */}
             <motion.div
               key="backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-[98] md:hidden"
-              style={{ background: 'rgba(3,7,18,0.8)', backdropFilter: 'blur(4px)' }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[110] lg:hidden"
+              style={{ background: 'rgba(15,23,42,0.3)', backdropFilter: 'blur(6px)' }}
               onClick={() => setMenuOpen(false)}
             />
 
-            {/* Drawer */}
+            {/* Drawer â€” frosted glass card */}
             <motion.div
               key="drawer"
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed top-0 right-0 bottom-0 w-72 z-[99] md:hidden flex flex-col"
+              initial={{ x: '100%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '100%', opacity: 0 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed top-0 right-0 bottom-0 w-72 z-[120] lg:hidden flex flex-col"
               style={{
-                background: 'rgba(17, 24, 39, 0.95)',
-                backdropFilter: 'blur(20px)',
-                borderLeft: '1px solid rgba(255,255,255,0.08)',
+                background: '#FFFFFF',
+                borderLeft: '1px solid rgba(15,23,42,0.08)',
+                boxShadow: '-6px 0 40px rgba(0,0,0,0.06)',
               }}
             >
-              <div className="flex items-center justify-between p-6 border-b border-slate-200/50">
-                <span className="font-grotesk font-semibold text-white">Menu</span>
-                <button onClick={() => setMenuOpen(false)} aria-label="Close menu">
-                  <X size={20} color="rgba(255,255,255,0.6)" />
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200/50">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-8 h-8 rounded-xl flex items-center justify-center"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(37,99,235,0.12), rgba(56,189,248,0.12))',
+                      border: '1px solid rgba(37,99,235,0.22)',
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5">
+                      <path d="M12 4c.4 2.5 2 4 4.5 4.4-2.5.4-4 2-4.4 4.5-.4-2.5-2-4-4.5-4.4 2.5-.4 4-2 4.4-4.5z" fill="#2563EB" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-syne font-extrabold text-sm text-[#0F172A] leading-none">Kartik</p>
+                    <p className="font-grotesk text-[10px] text-slate-500 mt-0.5">Full-Stack Developer</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 bg-white/70 text-slate-600 hover:text-slate-800 transition-colors"
+                  aria-label="Close"
+                >
+                  <X size={15} />
                 </button>
               </div>
 
-              <nav className="flex flex-col p-6 gap-2 flex-1">
+              {/* Nav links with stagger */}
+              <nav className="flex flex-col px-3 pt-3 gap-0.5 flex-1">
                 {navLinks.map(({ label, href }, i) => {
                   const isActive = activeSection === href.slice(1)
                   return (
@@ -256,35 +275,47 @@ export default function Navbar() {
                       key={href}
                       href={href}
                       onClick={(e) => handleNavClick(e, href)}
-                      initial={{ x: 40, opacity: 0 }}
+                      initial={{ x: 28, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                      className="px-4 py-3 rounded-lg font-grotesk font-medium transition-all duration-200"
+                      transition={{ delay: i * 0.055, ease: [0.22, 1, 0.36, 1], duration: 0.3 }}
+                      className="relative flex items-center gap-3 px-4 py-3 rounded-xl font-syne font-bold text-sm transition-colors duration-200 z-10"
                       style={{
-                        color: isActive ? '#2563EB' : 'rgba(255,255,255,0.7)',
-                        background: isActive ? 'rgba(37, 99, 235,0.07)' : 'transparent',
-                        border: isActive ? '1px solid rgba(37, 99, 235,0.15)' : '1px solid transparent',
+                        color: isActive ? '#2563EB' : '#475569',
                       }}
                     >
+                      {isActive && (
+                        <motion.div
+                          layoutId="mobile-active-pill"
+                          className="absolute inset-0 rounded-xl bg-[#2563EB]/[0.06] border border-[#2563EB]/[0.12] -z-10"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span
+                        className="w-[5px] h-[5px] rounded-full flex-shrink-0"
+                        style={{ background: isActive ? '#2563EB' : '#CBD5E1' }}
+                      />
                       {label}
                     </motion.a>
                   )
                 })}
               </nav>
 
-              <div className="p-6 border-t border-slate-200/50">
-                <a
+              {/* Footer CTA */}
+              <div className="px-4 pb-6 pt-3 border-t border-slate-200/50 flex flex-col gap-2.5">
+                <motion.a
                   href="#contact"
                   onClick={(e) => handleNavClick(e, '#contact')}
-                  className="block w-full text-center py-3 px-5 rounded-lg font-grotesk font-semibold text-sm"
+                  initial={{ y: 14, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-syne font-bold text-sm text-white"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(37, 99, 235,0.15), rgba(56, 189, 248,0.15))',
-                    border: '1px solid rgba(37, 99, 235,0.3)',
-                    color: '#2563EB',
+                    background: 'linear-gradient(135deg, #2563EB 0%, #38BDF8 100%)',
+                    boxShadow: '0 3px 14px rgba(37,99,235,0.25)',
                   }}
                 >
-                  Hire Me
-                </a>
+                  Hire Me <ArrowUpRight size={14} />
+                </motion.a>
               </div>
             </motion.div>
           </>

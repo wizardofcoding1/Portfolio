@@ -47,6 +47,9 @@ function AnimatedCounter({ value, duration = 2 }) {
   return <span>{count}</span>
 }
 
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import TechMessages from './sections/TechMessages'
+
 // Stats Counter Section component
 function StatsCounter() {
   const { ref, inView } = useInView({
@@ -77,6 +80,45 @@ function StatsCounter() {
   )
 }
 
+function PortfolioHome() {
+  return (
+    <>
+      {/* Sticky scroll indicator progress bar */}
+      <div className="scroll-bar" />
+
+      {/* Navigation Header */}
+      <Navbar />
+
+      {/* Main content elements */}
+      <main>
+        {/* Intro Hero Section */}
+        <Hero />
+
+        {/* Stats showcase metrics */}
+        <StatsCounter />
+
+        {/* Technical skills grid */}
+        <TechStack />
+
+        {/* Timeline Experience */}
+        <Experience />
+
+        {/* Projects Bento Grid */}
+        <Projects />
+
+        {/* Academic publication research */}
+        <Research />
+
+        {/* Direct connection form */}
+        <Contact />
+      </main>
+
+      {/* Base Footer */}
+      <Footer />
+    </>
+  )
+}
+
 export default function App() {
   const [loading, setLoading] = useState(true)
 
@@ -84,7 +126,7 @@ export default function App() {
   useLenis()
 
   return (
-    <>
+    <BrowserRouter>
       {/* Premium custom cursor */}
       <CustomCursor />
 
@@ -102,41 +144,13 @@ export default function App() {
             {/* Background spotlight textures & particles */}
             <BackgroundEffects />
 
-            {/* Sticky scroll indicator progress bar */}
-            <div className="scroll-bar" />
-
-            {/* Navigation Header */}
-            <Navbar />
-
-            {/* Main content elements */}
-            <main>
-              {/* Intro Hero Section */}
-              <Hero />
-
-              {/* Stats showcase metrics */}
-              <StatsCounter />
-
-              {/* Technical skills grid */}
-              <TechStack />
-
-              {/* Timeline Experience */}
-              <Experience />
-
-              {/* Projects Bento Grid */}
-              <Projects />
-
-              {/* Academic publication research */}
-              <Research />
-
-              {/* Direct connection form */}
-              <Contact />
-            </main>
-
-            {/* Base Footer */}
-            <Footer />
+            <Routes>
+              <Route path="/" element={<PortfolioHome />} />
+              <Route path="*" element={<TechMessages />} />
+            </Routes>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </BrowserRouter>
   )
 }

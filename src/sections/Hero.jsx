@@ -8,6 +8,7 @@ import MagneticButton from '../components/ui/MagneticButton'
 
 export default function Hero() {
   const [activeTab, setActiveTab] = useState('console') // 'console' | 'system' | 'ai'
+  const [isFlipped, setIsFlipped] = useState(false)
   const [terminalHistory, setTerminalHistory] = useState([
     { type: 'input', text: 'systemctl start dev-server' },
     { type: 'output', text: '➜ Initializing Kartik Varma AI module...' },
@@ -62,7 +63,7 @@ export default function Hero() {
   return (
     <section 
       id="hero" 
-      className="relative min-h-screen flex items-center justify-center pt-28 pb-16 overflow-hidden bg-transparent"
+      className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden bg-transparent"
     >
       {/* Background radial overlays */}
       <div className="absolute inset-0 pointer-events-none">
@@ -107,7 +108,7 @@ export default function Hero() {
           >
             I'm <span className="gradient-text">{personalInfo.firstName}</span>
             <br />
-            <span className="font-extralight text-slate-800">{personalInfo.lastName}</span>
+            <span className="font-extralight gradient-text">{personalInfo.lastName}</span>
           </motion.h1>
 
           {/* Roles */}
@@ -194,15 +195,150 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Right Side: Unique AI Interactive Dashboard Console */}
+        {/* Right Side: Profile Photo + AI Console */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3, type: 'spring', stiffness: 100 }}
-          className="lg:col-span-6 w-full"
+          className="lg:col-span-6 w-full flex flex-col gap-5"
         >
+          {/* ── 3D Flip Profile Card ── */}
+          <div
+            className="relative cursor-pointer"
+            style={{ perspective: '1100px', height: '118px' }}
+            onClick={() => setIsFlipped(f => !f)}
+            title={isFlipped ? 'Click to flip back' : 'Click to learn about me'}
+          >
+            <motion.div
+              animate={{ rotateY: isFlipped ? 180 : 0 }}
+              transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformStyle: 'preserve-3d', width: '100%', height: '100%', position: 'relative' }}
+            >
+
+              {/* ── FRONT FACE ── */}
+              <div
+                className="absolute inset-0 rounded-2xl border border-slate-200 bg-white shadow-[0_4px_24px_rgba(37,99,235,0.10),0_1px_4px_rgba(0,0,0,0.04)] "
+                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+              >
+                {/* Decorative background glow top-left */}
+                <div
+                  aria-hidden="true"
+                  className="absolute -left-10 -top-10 w-44 h-44 rounded-full pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.09) 0%, transparent 70%)' }}
+                />
+                {/* Decorative dot grid top-right */}
+                <div aria-hidden="true" className="absolute top-3 right-3 grid grid-cols-4 gap-[5px] opacity-[0.15]">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <span key={i} className="w-[3px] h-[3px] rounded-full bg-[#2563EB]" />
+                  ))}
+                </div>
+
+                <div className="relative flex items-center gap-5 p-5 h-full z-10">
+                  {/* Profile Photo */}
+                  <div className="relative flex-shrink-0 animate-float-slow z-50">
+                    <div
+                      className="rounded-full p-[3px]"
+                      style={{
+                        background: 'linear-gradient(135deg, #2563EB 0%, #38BDF8 100%)',
+                        boxShadow: '0 0 20px rgba(37,99,235,0.28), 0 0 48px rgba(56,189,248,0.10)',
+                      }}
+                    >
+                      <div className="rounded-full p-[2px] bg-white">
+                        <img
+                          src="/profile_photo.jpg"
+                          alt="Kartik Ramesh Varma — Full-Stack Developer"
+                          className="w-[88px] h-[88px] rounded-full object-cover object-top block"
+                        />
+                      </div>
+                    </div>
+                    {/* Online status dot */}
+                    <span className="absolute bottom-[6px] right-[4px] flex items-center justify-center w-[14px] h-[14px] rounded-full bg-white shadow">
+                      <span className="relative flex w-[9px] h-[9px]">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full w-[9px] h-[9px] bg-emerald-500" />
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Identity Info */}
+                  <div className="flex flex-col gap-1.5 text-left z-10 flex-1 min-w-0">
+                    <p className="text-[10px] font-grotesk font-extrabold text-[#2563EB] uppercase tracking-[0.15em]">
+                      Full-Stack Developer
+                    </p>
+                    <h2 className="text-[18px] font-black font-sora text-[#0F172A] leading-tight truncate">
+                      Kartik Ramesh Varma
+                    </h2>
+                    <p className="text-[11px] font-grotesk text-slate-500 leading-snug">
+                      📍 Mumbai, India
+                    </p>
+                    <div className="flex gap-1.5 mt-1 flex-wrap">
+                      {['React', 'Next.js', 'Node.js', 'MongoDB'].map((skill) => (
+                        <span
+                          key={skill}
+                          className="px-2 py-[2px] text-[9px] font-grotesk font-bold rounded-full text-[#2563EB] border border-[#2563EB]/25"
+                          style={{ backgroundColor: 'rgba(37,99,235,0.07)' }}
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Flip hint */}
+                  <div className="absolute bottom-2.5 right-3 text-[9px] font-grotesk font-bold text-slate-400 tracking-wider flex items-center gap-1">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                    click to flip
+                  </div>
+                </div>
+              </div>
+
+              {/* ── BACK FACE ── */}
+              <div
+                className="absolute inset-0 rounded-2xl overflow-hidden flex items-center"
+                style={{
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  transform: 'rotateY(180deg)',
+                  background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+                  border: '1px solid rgba(37,99,235,0.25)',
+                  boxShadow: '0 0 0 1px rgba(37,99,235,0.15), 0 8px 32px rgba(0,0,0,0.3)',
+                }}
+              >
+                {/* Left accent bar */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
+                  style={{ background: 'linear-gradient(to bottom, #2563EB, #38BDF8)' }}
+                />
+                {/* Glow blob */}
+                <div className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10 blur-3xl pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, #38BDF8, transparent)' }}
+                />
+
+                <div className="pl-7 pr-5 py-4 flex flex-col justify-center gap-2 w-full">
+                  <p className="text-[9px] font-grotesk font-extrabold text-[#38BDF8] uppercase tracking-[0.18em] mb-0.5">
+                    About Me
+                  </p>
+                  <p className="text-[12.5px] font-grotesk text-slate-300 leading-relaxed">
+                    Passionate <span className="text-white font-bold">Full-Stack Developer</span> from Mumbai with a love for building scalable, beautiful web products. I specialize in React, Node.js &amp; AI-integrated systems.
+                  </p>
+                  <div className="flex gap-3 mt-1">
+                    <span className="text-[10px] font-grotesk text-slate-400">🎓 B.Tech CSE • GPA 8.35</span>
+                    <span className="text-[10px] font-grotesk text-slate-400">🚀 3+ Projects Shipped</span>
+                  </div>
+                </div>
+
+                {/* Flip back hint */}
+                <div className="absolute bottom-2.5 right-3 text-[9px] font-grotesk font-bold text-slate-500 tracking-wider flex items-center gap-1">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                  click to flip back
+                </div>
+              </div>
+
+            </motion.div>
+          </div>
+
+
           {/* Console Outer Frame */}
-          <div className="w-full h-[400px] border border-slate-200 bg-[#FFFFFF]/80 rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col">
+          <div className="w-full border border-slate-200 bg-[#FFFFFF]/80 rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col" style={{ height: '300px' }}>
             
             {/* Header Tabs */}
             <div className="h-12 border-b border-slate-200/50 bg-[#F1F5F9] flex items-center justify-between px-4 select-none">
@@ -257,7 +393,7 @@ export default function Hero() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col gap-2.5 font-mono text-[11px] sm:text-xs text-slate-600 overflow-y-auto h-[280px] text-left pr-1"
+                    className="flex flex-col gap-2.5 font-mono text-[11px] sm:text-xs text-slate-600 overflow-y-auto h-[180px] text-left pr-1"
                   >
                     <div><span className="text-slate-800 font-bold">bash ~ </span> npm run start-agent-diagnostics</div>
                     <div className="text-slate-400">Loading server profile dependencies...</div>
@@ -278,7 +414,7 @@ export default function Hero() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col justify-between h-[280px] py-2"
+                    className="flex flex-col justify-between h-[180px] py-2"
                   >
                     <div className="grid grid-cols-2 gap-4">
                       {/* Stat item */}
@@ -336,7 +472,7 @@ export default function Hero() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col justify-between h-[280px]"
+                    className="flex flex-col justify-between h-[180px]"
                   >
                     {/* Command Console Print */}
                     <div className="flex-1 overflow-y-auto flex flex-col gap-2 font-mono text-[11px] sm:text-xs text-left pr-1">

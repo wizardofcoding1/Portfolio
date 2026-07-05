@@ -20,6 +20,7 @@ export default {
         grotesk: ['Space Grotesk', 'sans-serif'],
         sora: ['Sora', 'sans-serif'],
         outfit: ['Outfit', 'sans-serif'],
+        syne: ['Syne', 'sans-serif'],
       },
       animation: {
         'gradient-x': 'gradient-x 8s ease infinite',

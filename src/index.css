@@ -17,6 +17,7 @@
   --font-grotesk: 'Space Grotesk', sans-serif;
   --font-sora: 'Syne', sans-serif;
   --font-outfit: 'Outfit', sans-serif;
+  --font-syne: 'Syne', sans-serif;
 }
 
 @layer base {
@@ -308,4 +309,12 @@ html.lenis, html.lenis body {
 
 .animation-delay-6000 {
   animation-delay: 6s;
+}
+
+/* Custom cursor global hide */
+@media (pointer: fine) {
+  .has-custom-cursor,
+  .has-custom-cursor * {
+    cursor: none !important;
+  }
 }

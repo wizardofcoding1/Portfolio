@@ -16,7 +16,7 @@ export const personalInfo = {
   email: 'kartikvarma.dev@gmail.com',
   phone: '+91 9082165766',
   availability: 'Open to opportunities',
-  resumeUrl: '/resume_3.0.pdf',
+  resumeUrl: '/Resume_4.0_Kartik.pdf',
   avatar: '/profile_photo.jpg',
   socials: {
     github: 'https://github.com/varmakartik',

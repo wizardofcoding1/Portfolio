@@ -9,9 +9,9 @@ import { modalVariants, overlayVariants, staggerContainer, staggerItem } from '.
 import {
   SiReact, SiNextdotjs, SiTailwindcss, SiTypescript, SiJavascript,
   SiNodedotjs, SiExpress, SiPostgresql, SiMongodb, SiSupabase,
-  SiMysql, SiSqlite,
+  SiMysql, SiSqlite, SiRedis, SiDocker,
 } from 'react-icons/si'
-import { FaUserShield, FaServer } from 'react-icons/fa'
+import { FaUserShield, FaServer, FaEnvelope } from 'react-icons/fa'
 import { Cpu } from 'lucide-react'
 
 const techMeta = {
@@ -36,6 +36,10 @@ const techMeta = {
   'Realtime DB': { icon: SiSupabase, color: '#3ECF8E' },
   'Realtime Sync': { icon: SiSupabase, color: '#3ECF8E' },
   'Render': { icon: FaServer, color: '#46E3B7' },
+  'Redis': { icon: SiRedis, color: '#DC382D' },
+  'OAuth2 PKCE': { icon: FaUserShield, color: '#10B981' },
+  'Docker Compose': { icon: SiDocker, color: '#2496ED' },
+  'Nodemailer': { icon: FaEnvelope, color: '#3776AB' },
 }
 
 // Build filter groups from project techStacks
@@ -61,14 +65,14 @@ const filterGroups = [
     label: 'Backend',
     icon: SiNodedotjs,
     color: '#339933',
-    techs: ['Node.js', 'Express.js', 'JWT'],
+    techs: ['Node.js', 'Express.js', 'JWT', 'OAuth2 PKCE', 'Docker Compose', 'Nodemailer'],
   },
   {
     id: 'database',
     label: 'Database',
     icon: SiMongodb,
     color: '#47A248',
-    techs: ['MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Supabase'],
+    techs: ['MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Supabase', 'Redis'],
   },
   {
     id: 'services',
@@ -89,6 +93,7 @@ export default function Projects() {
   const [activeTech, setActiveTech] = useState(null) // null = show all in group
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false)
   const [desktopFilterOpen, setDesktopFilterOpen] = useState(false)
+  const [expandedProjects, setExpandedProjects] = useState({})
   const gridRef = useRef(null)
 
   // Collapse popped card when clicking outside the grid
@@ -509,24 +514,65 @@ export default function Projects() {
                       <p className="text-sm font-grotesk font-medium text-[#2563EB] mb-4">{project.subtitle}</p>
                       <p className="text-slate-600 font-grotesk text-sm mb-6 leading-relaxed">{project.description}</p>
                     </div>
-                    <div className="flex flex-wrap gap-2 mt-auto">
-                      {project.tags.slice(0, 4).map((tag, tIdx) => {
-                        const isHighlighted = activeTech && tag.toLowerCase() === activeTech.toLowerCase()
-                        return (
-                          <span key={tIdx}
-                            className="px-2.5 py-1 rounded-lg border font-grotesk text-[10px] font-semibold transition-all duration-200"
-                            style={isHighlighted
-                              ? { borderColor: `${techMeta[activeTech]?.color || '#2563EB'}60`, background: `${techMeta[activeTech]?.color || '#2563EB'}10`, color: techMeta[activeTech]?.color || '#2563EB' }
-                              : { borderColor: 'rgba(15,23,42,0.08)', background: 'rgba(255,255,255,0.02)', color: '#475569' }
-                            }
-                          >{tag}</span>
-                        )
-                      })}
-                      {project.tags.length > 4 && (
-                        <span className="px-2 py-1 rounded-lg border border-slate-200/50 bg-white/[0.02] font-grotesk text-[10px] font-semibold text-slate-600">
-                          +{project.tags.length - 4} more
-                        </span>
-                      )}
+
+                    {/* Tech stack tags */}
+                    <div className="mt-auto">
+                      {/* Desktop/Tablet view: show all tags with their respective colors, no "+more" */}
+                      <div className="hidden md:flex flex-wrap gap-2">
+                        {project.tags.map((tag, tIdx) => {
+                          const isHighlighted = activeTech && tag.toLowerCase() === activeTech.toLowerCase()
+                          const meta = techMeta[tag]
+                          const color = meta?.color || '#2563EB'
+                          const hasMeta = !!meta
+                          return (
+                            <span key={tIdx}
+                              className="px-2.5 py-1 rounded-lg border font-grotesk text-[10px] font-semibold transition-all duration-200"
+                              style={isHighlighted
+                                ? { borderColor: `${color}80`, background: `${color}15`, color: color }
+                                : hasMeta
+                                  ? { borderColor: `${color}35`, background: `${color}0a`, color: color }
+                                  : { borderColor: 'rgba(15,23,42,0.08)', background: 'rgba(255,255,255,0.02)', color: '#475569' }
+                              }
+                            >{tag}</span>
+                          )
+                        })}
+                      </div>
+
+                      {/* Mobile view: show sliced tags with clickable "+more" button */}
+                      <div className="flex md:hidden flex-wrap gap-2">
+                        {(expandedProjects[project.id] ? project.tags : project.tags.slice(0, 4)).map((tag, tIdx) => {
+                          const isHighlighted = activeTech && tag.toLowerCase() === activeTech.toLowerCase()
+                          const meta = techMeta[tag]
+                          const color = meta?.color || '#2563EB'
+                          const hasMeta = !!meta
+                          return (
+                            <span key={tIdx}
+                              className="px-2.5 py-1 rounded-lg border font-grotesk text-[10px] font-semibold transition-all duration-200"
+                              style={isHighlighted
+                                ? { borderColor: `${color}80`, background: `${color}15`, color: color }
+                                : hasMeta
+                                  ? { borderColor: `${color}35`, background: `${color}0a`, color: color }
+                                  : { borderColor: 'rgba(15,23,42,0.08)', background: 'rgba(255,255,255,0.02)', color: '#475569' }
+                              }
+                            >{tag}</span>
+                          )
+                        })}
+                        {project.tags.length > 4 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setExpandedProjects(prev => ({
+                                ...prev,
+                                [project.id]: !prev[project.id]
+                              }))
+                            }}
+                            className="px-2.5 py-1 rounded-lg border border-slate-200/50 bg-white/[0.02] hover:bg-slate-100 hover:border-slate-300 transition-colors duration-200 font-grotesk text-[10px] font-semibold text-slate-600 cursor-none"
+                            data-cursor-color="rgba(37, 99, 235, 0.4)"
+                          >
+                            {expandedProjects[project.id] ? 'Show less' : `+${project.tags.length - 4} more`}
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     {/* View Details button — only visible when card is popped */}
@@ -596,12 +642,14 @@ export default function Projects() {
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ type: 'spring', stiffness: 350, damping: 28 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-slate-200/80 shadow-[0_24px_60px_-15px_rgba(30,41,59,0.18)]"
+              className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl bg-white border border-slate-200/80 shadow-[0_24px_60px_-15px_rgba(30,41,59,0.18)] overflow-hidden"
             >
               {/* Accent top bar */}
               <div className="h-1 w-full rounded-t-2xl"
                 style={{ background: `linear-gradient(90deg, ${selectedProject.accentColor || '#2563EB'}, #38BDF8)` }}
               />
+
+              <div className="overflow-y-auto flex-1 modal-scroll-container" style={{ maxHeight: 'calc(90vh - 4px)' }}>
 
               {/* Header block */}
               <div className="px-6 sm:px-7 pt-7 pb-5 relative"
@@ -729,6 +777,7 @@ export default function Projects() {
                     })}
                   </div>
                 </div>
+              </div>
               </div>
             </motion.div>
           </motion.div>

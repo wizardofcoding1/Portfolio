@@ -20,6 +20,7 @@ import {
   SiTensorflow,
   SiPytorch,
   SiScikitlearn,
+  SiHoppscotch,
 } from "react-icons/si";
 
 import {
@@ -27,6 +28,7 @@ import {
   FaJava,
   FaServer,
   FaUserShield,
+  FaBolt,
 } from "react-icons/fa";
 
 export const skillCategories = [
@@ -100,6 +102,8 @@ export const skillCategories = [
       { name: "Git", icon: SiGit, color: "#F05032" },
       { name: "GitHub", icon: SiGithub, color: "#FFFFFF" },
       { name: "Postman", icon: SiPostman, color: "#FF6C37" },
+      { name: "Thunder Client", icon: FaBolt, color: "#0077CC" },
+      { name: "Hoppscotch", icon: SiHoppscotch, color: "#31C48D" },
     ],
   },
 

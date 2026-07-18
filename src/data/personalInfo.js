@@ -25,7 +25,7 @@ export const personalInfo = {
   },
   stats: [
     { label: 'Internship Experience', value: 3, suffix: ' Mos' },
-    { label: 'Key Projects Built', value: 4, suffix: '+' },
+    { label: 'Key Projects Built', value: 5, suffix: '+' },
     { label: 'B.Sc. CS GPA', value: 8.35, suffix: '/10' },
     { label: 'Tech Stack Skills', value: 22, suffix: '+' },
   ],

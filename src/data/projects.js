@@ -1,6 +1,38 @@
 export const projects = [
   {
     id: 1,
+    title: 'Zero Authentication System',
+    subtitle: 'Zero-Trust Authentication & Authorization Gateway',
+    description:
+      'A standalone, pluggable Identity Provider and authentication microservice implementing secure OIDC and OAuth2 S256 PKCE protocols from scratch.',
+    longDescription:
+      'Zero Authentication System is a standalone, pluggable authentication gateway resolving naive JWT flaws. It implements short-lived access tokens, refresh token rotation with reuse threat detection, instant Redis token revocation, multi-device session auditing, custom rate-limiting, and account lockouts.',
+    image: 'project5',
+    tags: ['Node.js', 'TypeScript', 'Express.js', 'PostgreSQL', 'Redis', 'Docker Compose', 'Nodemailer'],
+    features: [
+      'OIDC-compliant OAuth2 S256 PKCE authorization flow (custom authorization server)',
+      'Secure refresh token rotation with user-wide threat session invalidation',
+      'Instant access token revocation matching remaining TTLs via Redis blacklist',
+      'Multi-device session auditing using User-Agent, IP, and remote session revocation',
+      'Redis-backed 6-digit email OTP verification & sliding window rate-limiting middleware',
+      'Brute-force account lockout protection (15 mins on 5 failed login attempts)',
+    ],
+    architecture:
+      'Robust Node.js and TypeScript microservice containerized via Docker Compose. Connects to PostgreSQL with Prisma ORM for persistent profile structures, and Redis for rate-limiting, session blacklists, and OTP storage.',
+    challenges:
+      'Designing robust refresh token rotation to mitigate token theft: when a revoked refresh token is presented, the authorization server automatically invalidates the entire session chain and forces a full re-authentication, shutting down potential exploits.',
+    techStack: ['Node.js', 'TypeScript', 'Express.js', 'PostgreSQL', 'Redis', 'Docker Compose', 'Nodemailer'],
+    github: 'https://github.com/varmakartik/Zero-Authentication-System',
+    live: 'https://github.com/varmakartik/Zero-Authentication-System',
+    featured: true,
+    size: 'large',
+    gradient: 'from-blue-600/20 to-indigo-600/20',
+    accentColor: '#2563EB',
+    year: '2026',
+    status: 'Active',
+  },
+  {
+    id: 2,
     title: 'Careerly',
     subtitle: 'AI-Powered Career Guidance Platform',
     description:
@@ -24,14 +56,14 @@ export const projects = [
     github: 'https://github.com/varmakartik/Careerly',
     live: 'https://careerly-04.onrender.com',
     featured: true,
-    size: 'large',
+    size: 'medium',
     gradient: 'from-red-500/20 to-rose-500/20',
     accentColor: '#2563EB',
     year: '2025',
     status: 'Active',
   },
   {
-    id: 2,
+    id: 3,
     title: 'FinTrack',
     subtitle: 'Personal Finance & Expense Tracker',
     description:
@@ -63,7 +95,7 @@ export const projects = [
     status: 'Active',
   },
   {
-    id: 3,
+    id: 4,
     title: 'NEXUS-HR',
     subtitle: 'Employee Management System',
     description:
@@ -94,7 +126,7 @@ export const projects = [
     status: 'Active',
   },
   {
-    id: 4,
+    id: 5,
     title: 'Connect',
     subtitle: 'Intelligent Note-Taking Platform',
     description:

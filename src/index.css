@@ -318,3 +318,20 @@ html.lenis, html.lenis body {
     cursor: none !important;
   }
 }
+
+/* Custom scrollbar for modal overlay to prevent rounded corner clipping */
+.modal-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.modal-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--primary), var(--secondary));
+  border-radius: 9999px;
+}
+.modal-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, var(--secondary), var(--primary));
+}

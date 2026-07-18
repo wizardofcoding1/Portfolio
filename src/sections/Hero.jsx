@@ -43,7 +43,7 @@ export default function Hero() {
     } else if (cmd === 'skills') {
       response = 'Proficiencies: React, Next.js, Node.js, Express, MongoDB, PostgreSQL, JWT, Supabase'
     } else if (cmd === 'projects') {
-      response = 'Featured: Careerly (AI Platform) | FinTrack (Finance Tracker) | NEXUS-HR'
+      response = 'Featured: Zero Authentication System (OIDC/OAuth2 PKCE) | Careerly (AI Platform) | FinTrack | NEXUS-HR'
     } else if (cmd === 'info') {
       response = 'Kartik Ramesh Varma — Full Stack Developer based in Mumbai, India. GPA: 8.35/10.'
     } else if (cmd === 'oracle' || cmd === 'quotes' || cmd === 'telemetry') {
@@ -328,7 +328,7 @@ export default function Hero() {
                   </p>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
                     <span className="text-[10px] font-grotesk text-slate-400">🎓 B.Sc CS • GPA 8.35</span>
-                    <span className="text-[10px] font-grotesk text-slate-400">🚀 4+ Projects Shipped</span>
+                    <span className="text-[10px] font-grotesk text-slate-400">🚀 5+ Projects Shipped</span>
                   </div>
                 </div>
 
